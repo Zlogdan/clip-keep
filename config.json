@@ -1,0 +1,5 @@
+{
+  "maxHistorySize": 100,
+  "pollingIntervalMs": 500,
+  "storagePath": "history.json"
+}

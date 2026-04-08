@@ -130,12 +130,13 @@ public class HistoryService {
      */
     private void enforceLimit() {
         int limit = config.getMaxHistorySize();
-        // Count non-pinned items
-        while (countNonPinned() > limit) {
+        long nonPinned = countNonPinned();
+        while (nonPinned > limit) {
             // Remove oldest non-pinned item (highest index)
             for (int i = items.size() - 1; i >= 0; i--) {
                 if (!items.get(i).isPinned()) {
                     items.remove(i);
+                    nonPinned--;
                     break;
                 }
             }

@@ -8,6 +8,11 @@
     -fx-background-color: #f5f5f5;
 }
 
+/* --- top bar container --- */
+.top-bar {
+    -fx-background-color: #3D7AB5;
+}
+
 /* --- search bar --- */
 .search-bar {
     -fx-padding: 8 10 8 10;

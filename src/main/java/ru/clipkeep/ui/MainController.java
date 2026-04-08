@@ -11,6 +11,7 @@ import ru.clipkeep.service.ClipboardService;
 import ru.clipkeep.service.HistoryService;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ public class MainController {
 
     private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
     private static final DateTimeFormatter TIMESTAMP_FMT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final int PREVIEW_LENGTH = 80;
 
     // -----------------------------------------------------------------------
@@ -164,9 +165,9 @@ public class MainController {
         } else {
             previewArea.setText(item.getText());
             timestampLabel.setText(item.getTimestamp() != null
-                    ? TIMESTAMP_FMT.format(item.getTimestamp()) : "");
-            // Single-click also copies to clipboard
-            copyToClipboard(item);
+                    ? TIMESTAMP_FMT.format(
+                            ZonedDateTime.ofInstant(item.getTimestamp(), ZoneId.systemDefault()))
+                    : "");
         }
         updateButtonState(item);
     }

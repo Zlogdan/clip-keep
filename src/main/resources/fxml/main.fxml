@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.clipkeep.ui.MainController">
+
+    <!-- ================================================================
+         TOP  — search bar
+         ================================================================ -->
+    <top>
+        <VBox styleClass="top-bar">
+            <BorderPane.margin>
+                <Insets bottom="0"/>
+            </BorderPane.margin>
+            <HBox spacing="8" alignment="CENTER_LEFT" styleClass="search-bar">
+                <HBox.hgrow>
+                    <Priority fx:constant="ALWAYS"/>
+                </HBox.hgrow>
+                <Label text="🔍" styleClass="search-icon"/>
+                <TextField fx:id="searchField"
+                           promptText="Поиск..."
+                           styleClass="search-field"
+                           HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ================================================================
+         CENTER — list + preview (side by side)
+         ================================================================ -->
+    <center>
+        <SplitPane dividerPositions="0.45" styleClass="main-split">
+            <!-- Left: history list -->
+            <ListView fx:id="historyList" styleClass="history-list"/>
+
+            <!-- Right: full-text preview + timestamp -->
+            <VBox spacing="4" styleClass="preview-pane">
+                <VBox.vgrow>
+                    <Priority fx:constant="ALWAYS"/>
+                </VBox.vgrow>
+                <TextArea fx:id="previewArea"
+                          editable="false"
+                          wrapText="true"
+                          styleClass="preview-area"
+                          VBox.vgrow="ALWAYS"/>
+                <Label fx:id="timestampLabel" styleClass="timestamp-label"/>
+            </VBox>
+        </SplitPane>
+    </center>
+
+    <!-- ================================================================
+         BOTTOM — action buttons
+         ================================================================ -->
+    <bottom>
+        <HBox spacing="8" alignment="CENTER_LEFT" styleClass="action-bar">
+            <Button text="Копировать"
+                    styleClass="action-button"
+                    onAction="#onCopy"/>
+            <Button fx:id="pinButton"
+                    text="Закрепить"
+                    styleClass="action-button"
+                    onAction="#onPin"
+                    disable="true"/>
+            <Button fx:id="deleteButton"
+                    text="Удалить"
+                    styleClass="action-button,danger-button"
+                    onAction="#onDelete"
+                    disable="true"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="clearButton"
+                    text="Очистить историю"
+                    styleClass="action-button,danger-button"
+                    onAction="#onClear"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

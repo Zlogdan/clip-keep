@@ -1,23 +1,31 @@
 package ru.clipkeep.ui;
 
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
-import ru.clipkeep.model.ClipItem;
-import ru.clipkeep.service.ClipboardService;
-import ru.clipkeep.service.HistoryService;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
+import javafx.stage.Stage;
+import ru.clipkeep.model.ClipItem;
+import ru.clipkeep.service.ClipboardService;
+import ru.clipkeep.service.HistoryService;
+
 /**
- * JavaFX controller for the main application window (main.fxml).
+ * JavaFX-контроллер главного окна приложения (main.fxml).
  */
 public class MainController {
 
@@ -27,7 +35,7 @@ public class MainController {
     private static final int PREVIEW_LENGTH = 80;
 
     // -----------------------------------------------------------------------
-    // FXML injected fields
+    // Поля, внедряемые из FXML
     // -----------------------------------------------------------------------
 
     @FXML private TextField searchField;
@@ -39,25 +47,25 @@ public class MainController {
     @FXML private Button clearButton;
 
     // -----------------------------------------------------------------------
-    // Dependencies (set before initialize())
+    // Зависимости (задаются до initialize())
     // -----------------------------------------------------------------------
 
     private HistoryService historyService;
     private ClipboardService clipboardService;
 
-    /** Called by MainWindow after the FXML is loaded. */
+    /** Вызывается из MainWindow после загрузки FXML. */
     public void init(HistoryService historyService, ClipboardService clipboardService) {
         this.historyService = historyService;
         this.clipboardService = clipboardService;
     }
 
     // -----------------------------------------------------------------------
-    // Lifecycle
+    // Жизненный цикл
     // -----------------------------------------------------------------------
 
     @FXML
     public void initialize() {
-        // Cell factory: show truncated text + pin marker
+        // Фабрика ячеек: показываем сокращённый текст + маркер закрепления
         historyList.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(ClipItem item, boolean empty) {
@@ -73,11 +81,11 @@ public class MainController {
             }
         });
 
-        // Selection listener: show full text and enable action buttons
+        // Слушатель выбора: показываем полный текст и активируем кнопки действий
         historyList.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldVal, newVal) -> onSelectionChanged(newVal));
 
-        // Double-click copies to clipboard
+        // Двойной клик копирует элемент в буфер обмена
         historyList.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 ClipItem selected = historyList.getSelectionModel().getSelectedItem();
@@ -87,24 +95,24 @@ public class MainController {
             }
         });
 
-        // Search field: filter on every keystroke
+        // Поле поиска: фильтрация при каждом вводе символа
         searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilter(newVal));
 
-        // Start with buttons disabled
+        // В начале кнопки отключены
         updateButtonState(null);
     }
 
     // -----------------------------------------------------------------------
-    // Public API called by MainWindow
+    // Публичный API, вызываемый MainWindow
     // -----------------------------------------------------------------------
 
-    /** Reloads the list from HistoryService and re-applies the current filter. */
+    /** Перезагружает список из HistoryService и заново применяет текущий фильтр. */
     public void refresh() {
         Platform.runLater(() -> applyFilter(searchField.getText()));
     }
 
     // -----------------------------------------------------------------------
-    // FXML action handlers
+    // Обработчики действий FXML
     // -----------------------------------------------------------------------
 
     @FXML
@@ -149,7 +157,7 @@ public class MainController {
     }
 
     // -----------------------------------------------------------------------
-    // Private helpers
+    // Приватные вспомогательные методы
     // -----------------------------------------------------------------------
 
     private void applyFilter(String query) {
@@ -175,6 +183,16 @@ public class MainController {
     private void copyToClipboard(ClipItem item) {
         clipboardService.writeText(item.getText());
         LOGGER.fine("Copied to clipboard: " + truncate(item.getText(), 40));
+        minimizeWindow();
+    }
+
+    private void minimizeWindow() {
+        if (historyList.getScene() == null || historyList.getScene().getWindow() == null) {
+            return;
+        }
+        if (historyList.getScene().getWindow() instanceof Stage stage) {
+            stage.setIconified(true);
+        }
     }
 
     private void updateButtonState(ClipItem selected) {

@@ -1,7 +1,5 @@
 package ru.clipkeep.service;
 
-import ru.clipkeep.config.AppConfig;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -10,11 +8,13 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ru.clipkeep.config.AppConfig;
+
 /**
- * Polls the system clipboard at a fixed interval and notifies a listener
- * whenever the clipboard content changes.
+ * Опрос системного буфера обмена с фиксированным интервалом и уведомление
+ * слушателя при каждом изменении содержимого.
  * <p>
- * Runs on a dedicated daemon thread so it does not prevent JVM shutdown.
+ * Работает в отдельном daemon-потоке и не препятствует завершению JVM.
  */
 public class ClipboardWatcher {
 
@@ -29,11 +29,11 @@ public class ClipboardWatcher {
     private volatile String lastSeen = null;
 
     /**
-     * @param clipboardService low-level clipboard access
-     * @param config           application configuration (polling interval)
-     * @param onNewClip        callback invoked on the scheduler thread when
-     *                         clipboard content changes; the new text is passed
-     *                         as the argument.
+     * @param clipboardService низкоуровневый доступ к буферу обмена
+     * @param config           конфигурация приложения (интервал опроса)
+     * @param onNewClip        колбэк, вызываемый в потоке планировщика при
+     *                         изменении содержимого буфера; в аргумент
+     *                         передаётся новый текст.
      */
     public ClipboardWatcher(ClipboardService clipboardService,
                             AppConfig config,
@@ -48,7 +48,7 @@ public class ClipboardWatcher {
         });
     }
 
-    /** Starts the polling loop. Safe to call multiple times; second call is a no-op. */
+    /** Запускает цикл опроса. Повторный вызов безопасен и ничего не делает. */
     public synchronized void start() {
         if (taskHandle != null && !taskHandle.isCancelled()) {
             return;
@@ -59,7 +59,7 @@ public class ClipboardWatcher {
         LOGGER.info("ClipboardWatcher started (interval=" + interval + "ms)");
     }
 
-    /** Stops the polling loop. */
+    /** Останавливает цикл опроса. */
     public synchronized void stop() {
         if (taskHandle != null) {
             taskHandle.cancel(false);

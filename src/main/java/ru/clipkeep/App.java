@@ -1,6 +1,13 @@
 package ru.clipkeep;
 
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -12,23 +19,18 @@ import ru.clipkeep.service.StorageService;
 import ru.clipkeep.tray.TrayService;
 import ru.clipkeep.ui.MainWindow;
 
-import javax.swing.*;
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * Application entry point.
+ * Точка входа приложения.
  * <p>
- * Start-up sequence:
+ * Последовательность запуска:
  * <ol>
- *   <li>Load {@code config.json} (fall back to defaults if absent).</li>
- *   <li>Initialise all service objects.</li>
- *   <li>Build the JavaFX primary stage (hidden by default).</li>
- *   <li>Install the system-tray icon (on the AWT EDT).</li>
- *   <li>Start the clipboard-watcher thread.</li>
+ *   <li>Загрузка {@code config.json} (при отсутствии используются значения по умолчанию).</li>
+ *   <li>Инициализация всех сервисов.</li>
+ *   <li>Построение основного окна JavaFX (по умолчанию скрыто).</li>
+ *   <li>Установка иконки в системный трей (в AWT EDT).</li>
+ *   <li>Запуск потока наблюдения за буфером обмена.</li>
  * </ol>
- * The application stays alive until the user chooses "Выход" from the tray menu.
+ * Приложение работает, пока пользователь не выберет «Выход» в меню трея.
  */
 public class App extends Application {
 
@@ -36,7 +38,7 @@ public class App extends Application {
     private static final String CONFIG_FILE = "config.json";
 
     // -----------------------------------------------------------------------
-    // Service singletons – created once and shared across the app
+    // Синглтоны сервисов — создаются один раз и используются во всём приложении
     // -----------------------------------------------------------------------
     private AppConfig config;
     private ClipboardService clipboardService;
@@ -46,7 +48,7 @@ public class App extends Application {
     private TrayService trayService;
 
     // -----------------------------------------------------------------------
-    // JavaFX Application lifecycle
+    // Жизненный цикл JavaFX-приложения
     // -----------------------------------------------------------------------
 
     @Override
@@ -70,22 +72,22 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Keep the JVM alive even when the window is hidden
+        // Не завершать JVM, даже если окно скрыто
         Platform.setImplicitExit(false);
 
-        // Build the main window (hidden initially)
+        // Построение главного окна (изначально скрыто)
         mainWindow.build(primaryStage);
 
-        // Install the tray icon on the AWT Event Dispatch Thread
+        // Установка иконки трея в потоке диспетчеризации событий AWT
         SwingUtilities.invokeLater(() -> {
             trayService = new TrayService(historyService, mainWindow);
             trayService.install();
         });
 
-        // Start polling the clipboard
+        // Запуск опроса буфера обмена
         clipboardWatcher.start();
 
-        // Show the window immediately on first launch
+        // Показ окна сразу при первом запуске
         mainWindow.show();
 
         LOGGER.info("ClipKeep started");
@@ -100,7 +102,7 @@ public class App extends Application {
     }
 
     // -----------------------------------------------------------------------
-    // Helpers
+    // Вспомогательные методы
     // -----------------------------------------------------------------------
 
     private AppConfig loadConfig() {
@@ -109,20 +111,20 @@ public class App extends Application {
             try {
                 return new ObjectMapper().readValue(configFile, AppConfig.class);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Failed to read config.json, using defaults", e);
+                LOGGER.log(Level.WARNING, "Не удалось прочитать config.json, используются значения по умолчанию", e);
             }
         } else {
-            LOGGER.info("config.json not found, using default configuration");
+            LOGGER.info("Файл config.json не найден, используется конфигурация по умолчанию");
         }
         return new AppConfig();
     }
 
     // -----------------------------------------------------------------------
-    // Entry point
+    // Точка входа
     // -----------------------------------------------------------------------
 
     public static void main(String[] args) {
-        // Enable AWT system tray support alongside JavaFX
+        // Включить поддержку системного трея AWT вместе с JavaFX
         System.setProperty("java.awt.headless", "false");
         launch(args);
     }

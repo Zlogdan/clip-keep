@@ -1,3 +1,7 @@
+/**
+ * Модуль приложения ClipKeep.
+ * Описывает зависимости, открываемые пакеты для рефлексии и экспортируемый API.
+ */
 module ru.clipkeep {
     requires javafx.controls;
     requires javafx.fxml;

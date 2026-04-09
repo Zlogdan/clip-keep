@@ -3,7 +3,7 @@ package ru.clipkeep.config;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Application configuration loaded from config.json.
+ * Конфигурация приложения, загружаемая из config.json.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AppConfig {

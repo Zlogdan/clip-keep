@@ -1,16 +1,21 @@
 package ru.clipkeep.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import ru.clipkeep.config.AppConfig;
-import ru.clipkeep.model.ClipItem;
-
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import ru.clipkeep.config.AppConfig;
+import ru.clipkeep.model.ClipItem;
+
+/**
+ * Тесты для {@link HistoryService}.
+ */
 class HistoryServiceTest {
 
     @TempDir
@@ -57,7 +62,7 @@ class HistoryServiceTest {
         historyService.add("third");
         List<ClipItem> items = historyService.getAll();
         assertEquals(3, items.size());
-        // newest first
+        // Сначала самые новые
         assertEquals("third", items.get(0).getText());
         assertEquals("first", items.get(2).getText());
     }
@@ -67,9 +72,9 @@ class HistoryServiceTest {
         for (int i = 1; i <= 7; i++) {
             historyService.add("item " + i);
         }
-        // Limit is 5; 2 oldest should be removed
+        // Лимит равен 5; два самых старых элемента должны быть удалены
         assertEquals(5, historyService.getAll().size());
-        // Newest should still be present
+        // Самый новый элемент должен остаться
         assertEquals("item 7", historyService.getAll().get(0).getText());
     }
 
@@ -79,7 +84,7 @@ class HistoryServiceTest {
         String pinnedId = historyService.getAll().get(0).getId();
         historyService.togglePin(pinnedId);
 
-        // Fill to exceed limit
+        // Заполняем историю так, чтобы превысить лимит
         for (int i = 1; i <= 6; i++) {
             historyService.add("item " + i);
         }
@@ -143,7 +148,7 @@ class HistoryServiceTest {
     void storageService_shouldPersistAndReload() {
         historyService.add("persistent item");
 
-        // Create a new HistoryService with the same storage path — simulates restart
+        // Создаём новый HistoryService с тем же путём хранения — имитируем перезапуск
         AppConfig config2 = new AppConfig();
         config2.setMaxHistorySize(5);
         config2.setStoragePath(tempDir.resolve("history.json").toString());

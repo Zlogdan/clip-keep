@@ -1,14 +1,14 @@
 # ClipKeep
 
-**ClipKeep** — менеджер истории буфера обмена для Astra Linux 1.7 (X11), написанный на Java 17 + JavaFX.
+**ClipKeep** — менеджер истории буфера обмена для Astra Linux 1.7 (X11), написанный на Java 17 и JavaFX.
 
 ---
 
 ## Возможности
 
-- 📋 Автоматическое отслеживание буфера обмена (polling каждые 500 мс через `xsel`)
+- 📋 Автоматическое отслеживание буфера обмена (опрос каждые 500 мс через `xsel`)
 - 🗂 Хранение истории в JSON-файле (до 100 записей по умолчанию)
-- 📌 Закрепление важных записей (pinned-записи не удаляются при переполнении)
+- 📌 Закрепление важных записей (закреплённые записи не удаляются при переполнении)
 - 🔍 Мгновенный поиск по тексту
 - 🗑 Удаление отдельных записей и очистка всей истории (кроме закреплённых)
 - 🖥 Иконка в системном трее с контекстным меню
@@ -42,7 +42,7 @@ cd clip-keep
 # Скомпилировать и запустить тесты
 mvn verify
 
-# Собрать fat-jar (содержит все зависимости)
+# Собрать fat JAR (содержит все зависимости)
 mvn package -DskipTests
 ```
 
@@ -96,20 +96,20 @@ chmod +x /usr/local/bin/clipkeep
 
 ```
 src/main/java/ru/clipkeep/
-├── App.java                  # Точка входа (JavaFX Application)
+├── App.java                  # Точка входа (JavaFX-приложение)
 ├── config/
 │   └── AppConfig.java        # Конфигурация (config.json)
 ├── model/
 │   └── ClipItem.java         # Элемент истории (id, text, timestamp, pinned)
 ├── service/
 │   ├── ClipboardService.java  # Низкоуровневый доступ к буферу через xsel
-│   ├── ClipboardWatcher.java  # Polling-цикл в фоновом потоке
+│   ├── ClipboardWatcher.java  # Цикл опроса в фоновом потоке
 │   ├── StorageService.java    # Чтение/запись JSON-файла истории
 │   └── HistoryService.java    # Бизнес-логика (дубликаты, pin, фильтрация, лимит)
 ├── tray/
 │   └── TrayService.java       # Иконка и контекстное меню в системном трее
 └── ui/
-    ├── MainWindow.java        # Управление JavaFX Stage
+    ├── MainWindow.java        # Управление окном JavaFX (Stage)
     └── MainController.java    # FXML-контроллер главного окна
 ```
 

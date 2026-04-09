@@ -7,20 +7,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Low-level clipboard access using the {@code xsel} command-line utility.
+ * Низкоуровневый доступ к буферу обмена через консольную утилиту {@code xsel}.
  * <p>
- * Only plain text (UTF-8) is supported. The class is designed so that
- * future image support can be added by introducing additional read/write
- * methods that delegate to other xsel/xclip flags or a native library.
+ * Поддерживается только обычный текст (UTF-8). Класс спроектирован так,
+ * чтобы в будущем можно было добавить поддержку изображений через
+ * дополнительные методы чтения/записи с использованием других флагов
+ * xsel/xclip или нативной библиотеки.
  */
 public class ClipboardService {
 
     private static final Logger LOGGER = Logger.getLogger(ClipboardService.class.getName());
 
     /**
-     * Reads the current text content of the system clipboard (X11 clipboard selection).
+     * Читает текущее текстовое содержимое системного буфера обмена (X11 selection).
      *
-     * @return clipboard text, or {@code null} if xsel is unavailable or clipboard is empty.
+     * @return текст из буфера обмена или {@code null}, если xsel недоступен
+     *         либо буфер обмена пуст.
      */
     public String readText() {
         try {
@@ -53,9 +55,9 @@ public class ClipboardService {
     }
 
     /**
-     * Writes text to the system clipboard (X11 clipboard selection).
+     * Записывает текст в системный буфер обмена (X11 selection).
      *
-     * @param text the text to set; must not be null.
+     * @param text текст для установки; не должен быть {@code null}.
      */
     public void writeText(String text) {
         if (text == null) throw new IllegalArgumentException("text must not be null");

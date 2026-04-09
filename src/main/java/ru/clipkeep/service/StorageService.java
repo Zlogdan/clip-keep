@@ -17,13 +17,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Reads and writes the clipboard history to a JSON file.
+ * Читает и записывает историю буфера обмена в JSON-файл.
  * <p>
- * The file is located at {@link AppConfig#getStoragePath()}.  If the path
- * is relative it is resolved against the current working directory.
+ * Файл находится по пути из {@link AppConfig#getStoragePath()}. Если путь
+ * относительный, он вычисляется относительно текущего рабочего каталога.
  * <p>
- * All public methods are synchronised so that the background watcher thread
- * and the JavaFX thread can both call them safely.
+ * Все публичные методы синхронизированы, чтобы их безопасно могли вызывать
+ * и фоновый поток наблюдения, и поток JavaFX.
  */
 public class StorageService {
 
@@ -40,9 +40,10 @@ public class StorageService {
     }
 
     /**
-     * Loads all history items from disk.
+     * Загружает все элементы истории с диска.
      *
-     * @return mutable list of items (newest first), empty list if file absent.
+     * @return изменяемый список элементов (сначала новые);
+     *         пустой список, если файл отсутствует.
      */
     public synchronized List<ClipItem> load() {
         if (!Files.exists(storagePath)) {
@@ -60,9 +61,9 @@ public class StorageService {
     }
 
     /**
-     * Persists the given list to disk, overwriting the previous file.
+     * Сохраняет переданный список на диск, перезаписывая предыдущий файл.
      *
-     * @param items list to save (order is preserved).
+     * @param items список для сохранения (порядок сохраняется).
      */
     public synchronized void save(List<ClipItem> items) {
         try {

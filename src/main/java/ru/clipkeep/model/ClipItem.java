@@ -1,13 +1,13 @@
 package ru.clipkeep.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.time.Instant;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
- * Represents a single clipboard history entry.
- * Designed to be easily extensible for future image support.
+ * Представляет одну запись истории буфера обмена.
+ * Спроектирована так, чтобы её было легко расширить для будущей поддержки изображений.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClipItem {
@@ -17,7 +17,7 @@ public class ClipItem {
     private Instant timestamp;
     private boolean pinned;
 
-    /** Default constructor required by Jackson. */
+    /** Конструктор по умолчанию, необходимый для Jackson. */
     public ClipItem() {}
 
     public ClipItem(String text) {

@@ -1,23 +1,32 @@
 package ru.clipkeep.tray;
 
-import javafx.application.Platform;
-import ru.clipkeep.service.HistoryService;
-import ru.clipkeep.ui.MainWindow;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
+
+import javafx.application.Platform;
+import ru.clipkeep.service.HistoryService;
+import ru.clipkeep.ui.MainWindow;
+
 /**
- * Manages the system tray icon and its context menu.
+ * Управляет иконкой в системном трее и её контекстным меню.
  * <p>
- * Uses the AWT {@link SystemTray} API which is available on all platforms
- * that support a system tray.  JavaFX and AWT/Swing can coexist when
- * {@code Platform.setImplicitExit(false)} is set, preventing the JVM from
- * exiting when the JavaFX window is closed.
+ * Использует AWT API {@link SystemTray}, доступный на всех платформах,
+ * где поддерживается системный трей. JavaFX и AWT/Swing могут работать
+ * вместе при установленном {@code Platform.setImplicitExit(false)},
+ * что предотвращает завершение JVM при закрытии JavaFX-окна.
  */
 public class TrayService {
 
@@ -34,9 +43,9 @@ public class TrayService {
     }
 
     /**
-     * Installs the tray icon.  Must be called from the AWT event dispatch thread.
+     * Устанавливает иконку в трей. Должен вызываться из AWT event dispatch thread.
      *
-     * @throws UnsupportedOperationException if the platform does not support a system tray.
+     * @throws UnsupportedOperationException если платформа не поддерживает системный трей.
      */
     public void install() {
         if (!SystemTray.isSupported()) {
@@ -93,7 +102,7 @@ public class TrayService {
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Could not load tray icon", e);
         }
-        // Fallback: draw a simple coloured square
+        // Резервный вариант: рисуем простой цветной квадрат
         return createFallbackIcon();
     }
 

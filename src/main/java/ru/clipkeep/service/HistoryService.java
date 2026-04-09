@@ -1,8 +1,5 @@
 package ru.clipkeep.service;
 
-import ru.clipkeep.config.AppConfig;
-import ru.clipkeep.model.ClipItem;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,19 +7,22 @@ import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import ru.clipkeep.config.AppConfig;
+import ru.clipkeep.model.ClipItem;
+
 /**
- * Business-logic layer for the clipboard history.
+ * Слой бизнес-логики для истории буфера обмена.
  * <p>
- * Responsible for:
+ * Отвечает за:
  * <ul>
- *   <li>Deduplication of consecutive identical entries</li>
- *   <li>Enforcing the history size limit (pinned items are never removed)</li>
- *   <li>Pin / unpin toggling</li>
- *   <li>Text-based filtering</li>
- *   <li>Delegating persistence to {@link StorageService}</li>
+ *   <li>Удаление подряд идущих дубликатов</li>
+ *   <li>Соблюдение лимита истории (закреплённые элементы никогда не удаляются)</li>
+ *   <li>Переключение состояния закрепления</li>
+ *   <li>Фильтрацию по тексту</li>
+ *   <li>Делегирование сохранения в {@link StorageService}</li>
  * </ul>
- * All methods are synchronised to be safe for concurrent access from the
- * clipboard-watcher thread and the JavaFX UI thread.
+ * Все методы синхронизированы для безопасного конкурентного доступа из
+ * потока наблюдения за буфером обмена и из потока JavaFX UI.
  */
 public class HistoryService {
 
@@ -31,7 +31,7 @@ public class HistoryService {
     private final StorageService storage;
     private final AppConfig config;
 
-    /** In-memory list, newest items at index 0. */
+    /** Список в памяти, самые новые элементы находятся по индексу 0. */
     private final List<ClipItem> items;
 
     public HistoryService(StorageService storage, AppConfig config) {
@@ -41,15 +41,15 @@ public class HistoryService {
     }
 
     /**
-     * Adds a new clipboard entry.
-     * Ignores blank text and consecutive duplicates.
+     * Добавляет новую запись из буфера обмена.
+     * Пустой текст и подряд идущие дубликаты игнорируются.
      *
-     * @param text clipboard text to add.
+     * @param text текст из буфера обмена для добавления.
      */
     public synchronized void add(String text) {
         if (text == null || text.isBlank()) return;
 
-        // Ignore consecutive duplicate
+        // Игнорировать подряд идущий дубликат
         if (!items.isEmpty() && text.equals(items.get(0).getText())) {
             return;
         }
@@ -63,15 +63,15 @@ public class HistoryService {
     }
 
     /**
-     * Returns an unmodifiable snapshot of all items (newest first).
+     * Возвращает неизменяемый снимок всех элементов (сначала новые).
      */
     public synchronized List<ClipItem> getAll() {
         return Collections.unmodifiableList(new ArrayList<>(items));
     }
 
     /**
-     * Returns items whose text contains {@code query} (case-insensitive).
-     * Returns all items when {@code query} is blank.
+     * Возвращает элементы, текст которых содержит {@code query} (без учёта регистра).
+     * Если {@code query} пустой, возвращаются все элементы.
      */
     public synchronized List<ClipItem> search(String query) {
         if (query == null || query.isBlank()) {
@@ -84,9 +84,9 @@ public class HistoryService {
     }
 
     /**
-     * Toggles the pinned state of the item with the given id.
+     * Переключает состояние закрепления у элемента с указанным id.
      *
-     * @param id item id.
+     * @param id id элемента.
      */
     public synchronized void togglePin(String id) {
         items.stream()
@@ -100,9 +100,9 @@ public class HistoryService {
     }
 
     /**
-     * Removes the item with the given id.
+     * Удаляет элемент с указанным id.
      *
-     * @param id item id.
+     * @param id id элемента.
      */
     public synchronized void remove(String id) {
         boolean removed = items.removeIf(it -> it.getId().equals(id));
@@ -113,7 +113,7 @@ public class HistoryService {
     }
 
     /**
-     * Clears all non-pinned items from the history.
+     * Очищает из истории все незакреплённые элементы.
      */
     public synchronized void clearUnpinned() {
         items.removeIf(Predicate.not(ClipItem::isPinned));
@@ -122,17 +122,18 @@ public class HistoryService {
     }
 
     // -----------------------------------------------------------------------
-    // Private helpers
+    // Вспомогательные приватные методы
     // -----------------------------------------------------------------------
 
     /**
-     * Removes oldest non-pinned items until the list fits within the configured limit.
+     * Удаляет самые старые незакреплённые элементы, пока список
+     * не будет соответствовать заданному лимиту.
      */
     private void enforceLimit() {
         int limit = config.getMaxHistorySize();
         long nonPinned = countNonPinned();
         while (nonPinned > limit) {
-            // Remove oldest non-pinned item (highest index)
+            // Удаляем самый старый незакреплённый элемент (максимальный индекс)
             for (int i = items.size() - 1; i >= 0; i--) {
                 if (!items.get(i).isPinned()) {
                     items.remove(i);

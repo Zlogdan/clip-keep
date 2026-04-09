@@ -1,5 +1,10 @@
 package ru.clipkeep.ui;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -7,14 +12,9 @@ import javafx.stage.Stage;
 import ru.clipkeep.service.ClipboardService;
 import ru.clipkeep.service.HistoryService;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * Owns the primary JavaFX {@link Stage} and acts as the bridge between the
- * application bootstrap code and the {@link MainController}.
+ * Владеет основным JavaFX {@link Stage} и выступает мостом между
+ * кодом инициализации приложения и {@link MainController}.
  */
 public class MainWindow {
 
@@ -32,10 +32,10 @@ public class MainWindow {
     }
 
     /**
-     * Builds and shows the primary window.  Must be called on the JavaFX
-     * Application Thread (e.g. inside {@code Application.start()}).
+     * Создаёт и настраивает основное окно. Должен вызываться в потоке JavaFX
+     * (например, внутри {@code Application.start()}).
      *
-     * @param primaryStage the stage provided by the JavaFX runtime.
+     * @param primaryStage объект Stage, предоставленный средой выполнения JavaFX.
      */
     public void build(Stage primaryStage) {
         this.stage = primaryStage;
@@ -60,7 +60,7 @@ public class MainWindow {
             stage.setTitle("ClipKeep");
             stage.setScene(scene);
             stage.setOnCloseRequest(event -> {
-                event.consume(); // hide instead of closing
+                event.consume(); // скрываем окно вместо полного закрытия
                 stage.hide();
             });
         } catch (IOException e) {
@@ -69,7 +69,7 @@ public class MainWindow {
         }
     }
 
-    /** Shows the window and brings it to the front. */
+    /** Показывает окно и переносит его на передний план. */
     public void show() {
         if (stage != null) {
             stage.show();
@@ -77,14 +77,14 @@ public class MainWindow {
         }
     }
 
-    /** Hides the window (keeps the application running in the tray). */
+    /** Скрывает окно (приложение продолжает работать в трее). */
     public void hide() {
         if (stage != null) {
             stage.hide();
         }
     }
 
-    /** Delegates to the controller to reload the list. */
+    /** Делегирует контроллеру перезагрузку списка. */
     public void refresh() {
         if (controller != null) {
             controller.refresh();
